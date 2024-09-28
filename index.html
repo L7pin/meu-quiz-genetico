@@ -1,0 +1,1460 @@
+"use client"
+
+import React, { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import confetti from 'canvas-confetti'
+import { Lightbulb, Leaf, Award, Zap, ThumbsUp, ChevronRight } from 'lucide-react'
+
+const allQuestions = [
+  {
+    question: "Qual é o principal objetivo do melhoramento genético na pecuária?",
+    options: [
+      "Aumentar a beleza dos animais",
+      "Melhorar a produção e qualidade",
+      "Reduzir custos de alimentação",
+      "Criar novas espécies"
+    ],
+    correctAnswer: 1,
+    hint: "Pense no que traz mais benefícios econômicos para o produtor."
+  },
+  {
+    question: "O que é o cruzamento seletivo?",
+    options: [
+      "Mistura aleatória de raças",
+      "Reprodução entre parentes próximos",
+      "Seleção dos melhores animais para reprodução",
+      "Clonagem de animais"
+    ],
+    correctAnswer: 2,
+    hint: "Envolve escolha cuidadosa dos reprodutores."
+  },
+  {
+    question: "Qual é o propósito principal da inseminação artificial?",
+    options: [
+      "Aumentar o tamanho do rebanho",
+      "Prevenir doenças genéticas",
+      "Reproduzir sem contato direto",
+      "Alterar a cor dos animais"
+    ],
+    correctAnswer: 2,
+    hint: "Permite reprodução sem necessidade de proximidade física."
+  },
+  {
+    question: "O que significa a sigla DNA?",
+    options: [
+      "Dados Novos Agropecuários",
+      "Divisão Natural Animal",
+      "Ácido Desoxirribonucleico",
+      "Desenvolvimento Nutricional Avançado"
+    ],
+    correctAnswer: 2,
+    hint: "É o código genético presente em todos os seres vivos."
+  },
+  {
+    question: "Qual é um benefício comum do melhoramento genético na pecuária?",
+    options: [
+      "Animais mais coloridos",
+      "Maior resistência a doenças",
+      "Redução do tempo de vida",
+      "Aumento do tamanho dos chifres"
+    ],
+    correctAnswer: 1,
+    hint: "Contribui para a saúde geral do rebanho."
+  },
+  {
+    question: "O que é um marcador genético?",
+    options: [
+      "Uma tatuagem no animal",
+      "Um tipo de ração especial",
+      "Um gene indicador de características",
+      "Um método de contagem de animais"
+    ],
+    correctAnswer: 2,
+    hint: "Ajuda a identificar traços específicos no DNA."
+  },
+  {
+    question: "Qual é o papel da biotecnologia no melhoramento genético animal?",
+    options: [
+      "Criar robôs animais",
+      "Desenvolver novos tipos de ração",
+      "Melhorar técnicas de reprodução",
+      "Treinar animais para tarefas complexas"
+    ],
+    correctAnswer: 2,
+    hint: "Envolve o uso de tecnologia avançada na reprodução."
+  },
+  {
+    question: "O que estuda a epigenética?",
+    options: [
+      "Cores dos animais",
+      "Efeitos ambientais nos genes",
+      "Tamanho dos cromossomos",
+      "Velocidade de crescimento"
+    ],
+    correctAnswer: 1,
+    hint: "Analisa como fatores externos afetam a expressão genética."
+  },
+  {
+    question: "O que é a seleção genômica?",
+    options: [
+      "Escolha de animais pela cor",
+      "Seleção baseada no DNA",
+      "Separação por tamanho",
+      "Agrupamento por idade"
+    ],
+    correctAnswer: 1,
+    hint: "Utiliza informações do genoma para escolhas."
+  },
+  {
+    question: "Por que a diversidade genética é importante em um rebanho?",
+    options: [
+      "Para ter animais coloridos",
+      "Aumenta a resistência geral",
+      "Facilita a contagem",
+      "Melhora o sabor da carne"
+    ],
+    correctAnswer: 1,
+    hint: "Contribui para a saúde e adaptabilidade do grupo."
+  },
+  {
+    question: "O que é um QTL na genética animal?",
+    options: [
+      "Quota de Tratamento Leiteiro",
+      "Qualidade Total Laboratorial",
+      "Locus de característica quantitativa",
+      "Quantidade de Tempo de Lactação"
+    ],
+    correctAnswer: 2,
+    hint: "Relaciona-se a características mensuráveis."
+  },
+  {
+    question: "Qual é o objetivo da transferência de embriões?",
+    options: [
+      "Clonar animais",
+      "Mudar a cor dos filhotes",
+      "Aumentar descendentes superiores",
+      "Acelerar o crescimento"
+    ],
+    correctAnswer: 2,
+    hint: "Visa multiplicar características desejáveis."
+  },
+  {
+    question: "O que é consanguinidade na criação animal?",
+    options: [
+      "Mistura de sangues diferentes",
+      "Acasalamento entre parentes",
+      "Transfusão de sangue",
+      "Teste de tipo sanguíneo"
+    ],
+    correctAnswer: 1,
+    hint: "Envolve reprodução dentro da mesma família."
+  },
+  {
+    question: "Qual a função do pedigree no melhoramento genético?",
+    options: [
+      "Determinar a dieta",
+      "Registrar linhagem genética",
+      "Medir o peso do animal",
+      "Escolher nomes para animais"
+    ],
+    correctAnswer: 1,
+    hint: "Documenta a história familiar do animal."
+  },
+  {
+    question: "O que é herdabilidade de uma característica?",
+    options: [
+      "Capacidade de ter filhotes",
+      "Influência genética na variação",
+      "Velocidade de crescimento",
+      "Resistência a doenças"
+    ],
+    correctAnswer: 1,
+    hint: "Indica quanto dos traços dos pais passa aos filhos."
+  },
+  {
+    question: "Para que serve o teste de progênie?",
+    options: [
+      "Determinar a idade",
+      "Avaliar valor genético",
+      "Medir o tamanho",
+      "Verificar a saúde"
+    ],
+    correctAnswer: 1,
+    hint: "Avalia a qualidade genética através dos descendentes."
+  },
+  {
+    question: "O que é um SNP na genética molecular?",
+    options: [
+      "Sistema Nacional de Pecuária",
+      "Seleção Natural Produtiva",
+      "Síndrome de Nutrição Pobre",
+      "Polimorfismo de nucleotídeo único"
+    ],
+    correctAnswer: 3,
+    hint: "Refere-se a variações pontuais no DNA."
+  },
+  {
+    question: "Qual a importância da genômica na pecuária moderna?",
+    options: [
+      "Criar animais coloridos",
+      "Selecionar características precisamente",
+      "Aumentar o tamanho dos animais",
+      "Reduzir o tempo de gestação"
+    ],
+    correctAnswer: 1,
+    hint: "Permite seleção mais acurada de traços desejáveis."
+  },
+  {
+    question: "O que é um banco de germoplasma?",
+    options: [
+      "Banco que financia fazendeiros",
+      "Local de armazenamento de rações",
+      "Coleção de material genético",
+      "Sistema de contabilidade rural"
+    ],
+    correctAnswer: 2,
+    hint: "Preserva diversidade genética para o futuro."
+  },
+  {
+    question: "Como a bioinformática auxilia o melhoramento genético?",
+    options: [
+      "Criando robôs para fazendas",
+      "Analisando grandes volumes de dados",
+      "Desenvolvendo novas rações",
+      "Automatizando a ordenha"
+    ],
+    correctAnswer: 1,
+    hint: "Processa informações genéticas complexas."
+  },
+  {
+    question: "O que é a técnica CRISPR na pecuária?",
+    options: [
+      "Método de alimentação",
+      "Sistema de identificação",
+      "Ferramenta de edição genética",
+      "Técnica de vacinação"
+    ],
+    correctAnswer: 2,
+    hint: "Permite modificações precisas no DNA."
+  },
+  {
+    question: "O que é seleção assistida por marcadores (MAS)?",
+    options: [
+      "Escolha por cores",
+      "Seleção usando DNA",
+      "Marcação física de animais",
+      "Separação por tamanho"
+    ],
+    correctAnswer: 1,
+    hint: "Utiliza informações genéticas específicas na seleção."
+  },
+  {
+    question: "Como a engenharia genética difere do melhoramento tradicional?",
+    options: [
+      "É mais rápida",
+      "Usa apenas plantas",
+      "Modifica diretamente o DNA",
+      "Não altera genes"
+    ],
+    correctAnswer: 2,
+    hint: "Envolve manipulação direta do material genético."
+  },
+  {
+    question: "O que é um gene knockout?",
+    options: [
+      "Gene campeão",
+      "Gene desativado",
+      "Gene mutante",
+      "Gene duplicado"
+    ],
+    correctAnswer: 1,
+    hint: "Envolve a remoção ou inativação de um gene específico."
+  },
+  {
+    question: "Como a epigenética influencia características na pecuária?",
+    options: [
+      "Mudando o DNA",
+      "Alterando expressão gênica",
+      "Criando novos genes",
+      "Eliminando genes ruins"
+    ],
+    correctAnswer: 1,
+    hint: "Afeta como os genes são expressos sem alterar a sequência de DNA."
+  },
+  {
+    question: "O que é genotipagem por sequenciamento (GBS)?",
+    options: [
+      "Método de alimentação",
+      "Técnica de vacinação",
+      "Identificação de variações genéticas",
+      "Sistema de reprodução"
+    ],
+    correctAnswer: 2,
+    hint: "Analisa eficientemente o DNA de muitos animais."
+  },
+  {
+    question: "Por que conservar raças nativas é importante?",
+    options: [
+      "Apenas para exibição",
+      "Manter fazendas bonitas",
+      "Preservar genes únicos",
+      "Aumentar preços de carne"
+    ],
+    correctAnswer: 2,
+    hint: "Mantém características adaptativas importantes."
+  },
+  {
+    question: "Como o estresse térmico afeta a expressão gênica?",
+    options: [
+      "Não afeta",
+      "Muda a cor do pelo",
+      "Altera genes de adaptação",
+      "Aumenta o tamanho"
+    ],
+    correctAnswer: 2,
+    hint: "Influencia como certos genes respondem ao ambiente."
+  },
+  {
+    question: "O que é RNA de interferência (RNAi)?",
+    options: [
+      "Novo tipo de ração",
+      "Técnica de silenciamento gênico",
+      "Método de reprodução",
+      "Sistema de comunicação animal"
+    ],
+    correctAnswer: 1,
+    hint: "Usado para 'desligar' genes específicos temporariamente."
+  },
+  {
+    question: "Qual o papel da metagenômica na saúde animal?",
+    options: [
+      "Estudar plantas",
+      "Analisar microorganismos",
+      "Criar novos medicamentos",
+      "Medir temperatura corporal"
+    ],
+    correctAnswer: 1,
+    hint: "Examina o conjunto de genes de todos os microrganismos presentes."
+  },
+  {
+    question: "Como a seleção genômica revolucionou a pecuária leiteira?",
+    options: [
+      "Produzindo leite colorido",
+      "Seleção mais precisa",
+      "Aumentando tamanho das vacas",
+      "Criando sabores novos"
+    ],
+    correctAnswer: 1,
+    hint: "Permite prever características produtivas com mais precisão."
+  },
+  {
+    question: "O que é clonagem animal e suas aplicações?",
+    options: [
+      "Criar robôs animais",
+      "Reproduzir cópias genéticas",
+      "Mudar cor dos animais",
+      "Acelerar crescimento"
+    ],
+    correctAnswer: 1,
+    hint: "Produz animais geneticamente idênticos."
+  },
+  {
+    question: "Como a nutrigenômica melhora a eficiência alimentar?",
+    options: [
+      "Criando super alimentos",
+      "Estudando genes e dieta",
+      "Fazendo animais comerem menos",
+      "Aumentando apetite"
+    ],
+    correctAnswer: 1,
+    hint: "Analisa como os genes respondem a diferentes nutrientes."
+  },
+  {
+    question: "O que é transferência nuclear de células somáticas?",
+    options: [
+      "Troca de núcleos celulares",
+      "Inseminação artificial",
+      "Fertilização in vitro",
+      "Transplante de órgãos"
+    ],
+    correctAnswer: 0,
+    hint: "Envolve a substituição do núcleo de um óvulo."
+  },
+  {
+    question: "Qual a importância dos estudos de associação genômica (GWAS)?",
+    options: [
+      "Determinar cor dos animais",
+      "Identificar genes importantes",
+      "Medir peso dos animais",
+      "Contar cromossomos"
+    ],
+    correctAnswer: 1,
+    hint: "Associa variações genéticas a características específicas."
+  },
+  {
+    question: "Como a edição genética melhora a resistência a doenças?",
+    options: [
+      "Criando super vacinas",
+      "Modificando genes imunológicos",
+      "Eliminando todos os patógenos",
+      "Isolando animais doentes"
+    ],
+    correctAnswer: 1,
+    hint: "Altera genes específicos relacionados à imunidade."
+  },
+  {
+    question: "O que diferencia a seleção genômica da tradicional?",
+    options: [
+      "É mais lenta",
+      "Usa apenas aparência",
+      "Analisa o genoma completo",
+      "Ignora o pedigree"
+    ],
+    correctAnswer: 2,
+    hint: "Utiliza informações de todo o DNA do animal."
+  },
+  {
+    question: "Qual o papel da bioinformática na análise genômica?",
+    options: [
+      "Criar websites",
+      "Processar dados genéticos",
+      "Treinar animais",
+      "Desenvolver rações"
+    ],
+    correctAnswer: 1,
+    hint: "Lida com grandes volumes de informações genéticas."
+  },
+  {
+    question: "Como a genômica auxilia na conservação de espécies?",
+    options: [
+      "Criando novos animais",
+      "Preservando diversidade",
+      "Aumentando população",
+      "Alterando habitat"
+    ],
+    correctAnswer: 1,
+    hint: "Ajuda a manter a variabilidade genética."
+  },
+  {
+    question: "O que são marcadores moleculares?",
+    options: [
+      "Chips eletrônicos",
+      "Sequências de DNA indicadoras",
+      "Tatuagens nos animais",
+      "Tipos de ração"
+    ],
+    correctAnswer: 1,
+    hint: "Identificam características genéticas específicas."
+  },
+  {
+    question: "Como melhorar a qualidade da carne bovina via genômica?",
+    options: [
+      "Aumentando o tamanho",
+      "Identificando genes de qualidade",
+      "Mudando a cor da carne",
+      "Alterando a dieta"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em genes relacionados a características desejáveis da carne."
+  },
+  {
+    question: "O que é sequenciamento de nova geração (NGS)?",
+    options: [
+      "Novo método de criação",
+      "Técnica rápida de leitura de DNA",
+      "Sistema de reprodução",
+      "Contagem de cromossomos"
+    ],
+    correctAnswer: 1,
+    hint: "Permite analisar o DNA muito mais rapidamente."
+  },
+  {
+    question: "Como a epigenética afeta a produção animal?",
+    options: [
+      "Não afeta",
+      "Altera cor dos animais",
+      "Modifica expressão gênica",
+      "Muda o DNA permanentemente"
+    ],
+    correctAnswer: 2,
+    hint: "Influencia como os genes são ativados ou desativados."
+  },
+  {
+    question: "O que é um QTL e sua importância?",
+    options: [
+      "Quociente de Tempo Leiteiro",
+      "Região genômica influente",
+      "Qualidade Total do Leite",
+      "Quantidade de Trato Linfático"
+    ],
+    correctAnswer: 1,
+    hint: "Associado a características quantitativas importantes."
+  },
+  {
+    question: "Como a genômica reduz o impacto ambiental da pecuária?",
+    options: [
+      "Criando animais menores",
+      "Selecionando eficiência",
+      "Eliminando flatulência",
+      "Usando menos terra"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em características que melhoram a eficiência e reduzem emissões."
+  },
+  {
+    question: "O que é genotipagem por sequenciamento (GBS)?",
+    options: [
+      "Método de alimentação",
+      "Identificação de variações",
+      "Sistema de reprodução",
+      "Contagem de animais"
+    ],
+    correctAnswer: 1,
+    hint: "Técnica eficiente para analisar diferenças genéticas."
+  },
+  {
+    question: "Como melhorar a eficiência alimentar via genômica?",
+    options: [
+      "Usando menos comida",
+      "Identificando genes eficientes",
+      "Criando alimentos sintéticos",
+      "Aumentando o apetite"
+    ],
+    correctAnswer: 1,
+    hint: "Busca genes relacionados à melhor conversão alimentar."
+  },
+  {
+    question: "O que é CRISPR-Cas9 na pecuária?",
+    options: [
+      "Nova raça de gado",
+      "Ferramenta de edição genética",
+      "Tipo de ração",
+      "Método de vacinação"
+    ],
+    correctAnswer: 1,
+    hint: "Permite modificações precisas no DNA dos animais."
+  },
+  {
+    question: "Como selecionar animais resistentes a doenças?",
+    options: [
+      "Usando mais vacinas",
+      "Identificando genes de resistência",
+      "Isolando todos os animais",
+      "Eliminando animais doentes"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em características genéticas associadas à imunidade."
+  },
+  {
+    question: "O que é RNA-Seq?",
+    options: [
+      "Sequenciamento de DNA",
+      "Análise de expressão gênica",
+      "Reprodução assistida",
+      "Contagem de proteínas"
+    ],
+    correctAnswer: 1,
+    hint: "Mede quais genes estão ativos em um tecido."
+  },
+  {
+    question: "Como melhorar a produção de leite geneticamente?",
+    options: [
+      "Aumentando o tamanho das vacas",
+      "Selecionando genes produtivos",
+      "Usando hormônios",
+      "Alterando a dieta"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em genes associados à lactação e qualidade do leite."
+  },
+  {
+    question: "O que é seleção genômica?",
+    options: [
+      "Escolha por aparência",
+      "Seleção baseada no DNA",
+      "Cruzamento aleatório",
+      "Separação por idade"
+    ],
+    correctAnswer: 1,
+    hint: "Usa informações do genoma completo para prever valor genético."
+  },
+  {
+    question: "Como a epigenética influencia a produção de carne?",
+    options: [
+      "Não influencia",
+      "Altera a expressão gênica",
+      "Muda a cor da carne",
+      "Aumenta o tamanho do animal"
+    ],
+    correctAnswer: 1,
+    hint: "Afeta como os genes relacionados ao crescimento são expressos."
+  },
+  {
+    question: "O que são SNPs?",
+    options: [
+      "Suplementos Nutricionais Proteicos",
+      "Variações de uma base no DNA",
+      "Sistema de Numeração Pecuária",
+      "Sequência de Novos Peptídeos"
+    ],
+    correctAnswer: 1,
+    hint: "Pequenas variações genéticas comuns em uma população."
+  },
+  {
+    question: "Como conservar raças nativas via genômica?",
+    options: [
+      "Criando zoológicos",
+      "Preservando diversidade genética",
+      "Misturando todas as raças",
+      "Congelando embriões"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em manter a variabilidade genética única."
+  },
+  {
+    question: "O que é microarray?",
+    options: [
+      "Microscópio avançado",
+      "Técnica de análise gênica",
+      "Chip de identificação",
+      "Ração em miniatura"
+    ],
+    correctAnswer: 1,
+    hint: "Permite analisar a expressão de muitos genes simultaneamente."
+  },
+  {
+    question: "Como melhorar a eficiência reprodutiva via genômica?",
+    options: [
+      "Usando hormônios",
+      "Identificando genes de fertilidade",
+      "Aumentando o número de acasalamentos",
+      "Reduzindo a idade reprodutiva"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em genes associados à reprodução e desenvolvimento."
+  },
+  {
+    question: "O que é PCR em tempo real?",
+    options: [
+      "Contagem de animais",
+      "Medição de expressão gênica",
+      "Pesagem automática",
+      "Reprodução controlada"
+    ],
+    correctAnswer: 1,
+    hint: "Quantifica a presença de sequências específicas de DNA."
+  },
+  {
+    question: "Como a genômica melhora o bem-estar animal?",
+    options: [
+      "Criando animais sem sentimentos",
+      "Selecionando adaptabilidade",
+      "Aumentando o espaço nas fazendas",
+      "Reduzindo a produção"
+    ],
+    correctAnswer: 1,
+    hint: "Busca características que promovem melhor adaptação e saúde."
+  },
+  {
+    question: "O que é sequenciamento de terceira geração?",
+    options: [
+      "Novo método de criação",
+      "Técnica de leitura de DNA longo",
+      "Sistema de reprodução avançado",
+      "Contagem de proteínas"
+    ],
+    correctAnswer: 1,
+    hint: "Permite ler sequências muito longas de DNA de uma vez."
+  },
+  {
+    question: "Como melhorar a qualidade da lã geneticamente?",
+    options: [
+      "Penteando as ovelhas diariamente",
+      "Selecionando genes de qualidade",
+      "Pintando a lã",
+      "Usando xampus especiais"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em genes associados às características da fibra."
+  },
+  {
+    question: "O que é genotipagem de baixa densidade?",
+    options: [
+      "Criação de animais menores",
+      "Análise genética econômica",
+      "Redução do rebanho",
+      "Técnica de alimentação"
+    ],
+    correctAnswer: 1,
+    hint: "Método mais acessível de obter informações genéticas básicas."
+  },
+  {
+    question: "Como selecionar animais tolerantes ao calor?",
+    options: [
+      "Criando sombra artificial",
+      "Identificando genes de tolerância",
+      "Movendo animais para áreas frias",
+      "Usando ventiladores"
+    ],
+    correctAnswer: 1,
+    hint: "Busca características genéticas associadas à adaptação térmica."
+  },
+  {
+    question: "O que é RNA de interferência (RNAi)?",
+    options: [
+      "Comunicação entre animais",
+      "Técnica de silenciamento gênico",
+      "Novo tipo de ração",
+      "Método de reprodução"
+    ],
+    correctAnswer: 1,
+    hint: "Usado para 'desligar' temporariamente genes específicos."
+  },
+  {
+    question: "Como melhorar a resistência a parasitas geneticamente?",
+    options: [
+      "Usando mais medicamentos",
+      "Selecionando genes de resistência",
+      "Isolando animais infectados",
+      "Eliminando todos os parasitas"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em características genéticas de defesa natural."
+  },
+  {
+    question: "O que é ChIP-seq?",
+    options: [
+      "Chip de identificação",
+      "Técnica de estudo de interações DNA-proteína",
+      "Método de alimentação",
+      "Sistema de pesagem"
+    ],
+    correctAnswer: 1,
+    hint: "Mapeia onde proteínas específicas se ligam ao DNA."
+  },
+  {
+    question: "Como melhorar a produção de ovos via genômica?",
+    options: [
+      "Aumentando o tamanho das galinhas",
+      "Selecionando genes de produtividade",
+      "Usando luz artificial",
+      "Alterando a dieta"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em genes associados à postura e qualidade dos ovos."
+  },
+  {
+    question: "O que é seleção assistida por marcadores (MAS)?",
+    options: [
+      "Escolha por cores",
+      "Seleção usando marcadores genéticos",
+      "Marcação física de animais",
+      "Sistema de pesagem"
+    ],
+    correctAnswer: 1,
+    hint: "Usa informações de marcadores específicos no DNA."
+  },
+  {
+    question: "Como a epigenética influencia a produção de leite?",
+    options: [
+      "Não influencia",
+      "Altera a expressão de genes lácteos",
+      "Muda a cor do leite",
+      "Aumenta o tamanho do úbere"
+    ],
+    correctAnswer: 1,
+    hint: "Afeta como os genes relacionados à lactação são expressos."
+  },
+  {
+    question: "O que é um haplótipo?",
+    options: [
+      "Tipo de vacina",
+      "Conjunto de alelos herdados juntos",
+      "Nova raça animal",
+      "Método de alimentação"
+    ],
+    correctAnswer: 1,
+    hint: "Grupo de genes próximos que tendem a ser herdados em conjunto."
+  },
+  {
+    question: "Como selecionar para longevidade produtiva?",
+    options: [
+      "Usando fórmulas anti-envelhecimento",
+      "Identificando genes de saúde e eficiência",
+      "Aumentando a idade de abate",
+      "Reduzindo a produção"
+    ],
+    correctAnswer: 1,
+    hint: "Busca características genéticas associadas à saúde e produtividade duradoura."
+  },
+  {
+    question: "O que é metabolômica?",
+    options: [
+      "Estudo de meteoros",
+      "Análise de metabólitos",
+      "Técnica de clonagem",
+      "Sistema de alimentação"
+    ],
+    correctAnswer: 1,
+    hint: "Estuda os produtos químicos encontrados em um organismo."
+  },
+  {
+    question: "Como melhorar a eficiência da produção de carne suína?",
+    options: [
+      "Aumentando o tamanho dos porcos",
+      "Selecionando genes de crescimento e qualidade",
+      "Usando mais antibióticos",
+      "Reduzindo o tempo de criação"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em genes associados ao crescimento eficiente e qualidade da carne."
+  },
+  {
+    question: "O que é um estudo de associação genômica ampla (GWAS)?",
+    options: [
+      "Sistema de pesagem",
+      "Análise de associações gene-característica",
+      "Técnica de inseminação",
+      "Método de treinamento"
+    ],
+    correctAnswer: 1,
+    hint: "Busca correlações entre variações genéticas e características específicas."
+  },
+  {
+    question: "Como reduzir a emissão de metano em rumin antes via genômica?",
+    options: [
+      "Eliminando todos os ruminantes",
+      "Selecionando genes de baixa emissão",
+      "Usando filtros nasais",
+      "Mudando completamente a dieta"
+    ],
+    correctAnswer: 1,
+    hint: "Busca características genéticas associadas a menor produção de metano."
+  },
+  {
+    question: "O que é edição de base no DNA?",
+    options: [
+      "Correção de livros genéticos",
+      "Técnica de modificação precisa de DNA",
+      "Método de reprodução",
+      "Sistema de classificação animal"
+    ],
+    correctAnswer: 1,
+    hint: "Permite alterar bases individuais no DNA sem cortes."
+  },
+  {
+    question: "Como melhorar a qualidade da carne de frango geneticamente?",
+    options: [
+      "Aumentando o tamanho das aves",
+      "Selecionando genes de qualidade",
+      "Usando aditivos na ração",
+      "Alterando o método de abate"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em genes associados à textura, sabor e valor nutricional."
+  },
+  {
+    question: "O que é genotipagem por sequenciamento (GBS)?",
+    options: [
+      "Contagem de animais",
+      "Técnica de análise genética eficiente",
+      "Sistema de alimentação",
+      "Método de vacinação"
+    ],
+    correctAnswer: 1,
+    hint: "Permite analisar variações genéticas em muitos animais de forma econômica."
+  },
+  {
+    question: "Como melhorar a conversão alimentar via genômica?",
+    options: [
+      "Reduzindo a quantidade de alimento",
+      "Selecionando genes de eficiência metabólica",
+      "Aumentando o tamanho do estômago",
+      "Usando enzimas artificiais"
+    ],
+    correctAnswer: 1,
+    hint: "Busca características genéticas associadas ao uso eficiente dos nutrientes."
+  },
+  {
+    question: "O que é RNA-seq?",
+    options: [
+      "Sequenciamento de DNA",
+      "Análise de expressão gênica",
+      "Técnica de clonagem",
+      "Sistema de reprodução"
+    ],
+    correctAnswer: 1,
+    hint: "Mede quais e quantos genes estão ativos em um tecido."
+  },
+  {
+    question: "Como melhorar a resistência a doenças em peixes?",
+    options: [
+      "Usando mais antibióticos",
+      "Selecionando genes de imunidade",
+      "Aumentando a densidade de criação",
+      "Mudando a temperatura da água"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em características genéticas associadas à resposta imune."
+  },
+  {
+    question: "O que diferencia a seleção genômica da tradicional?",
+    options: [
+      "É mais lenta",
+      "Usa apenas aparência física",
+      "Analisa o genoma completo",
+      "Ignora o histórico familiar"
+    ],
+    correctAnswer: 2,
+    hint: "Utiliza informações de todo o DNA do animal para previsões mais precisas."
+  },
+  {
+    question: "Como a epigenética afeta a adaptação animal?",
+    options: [
+      "Não afeta",
+      "Altera a expressão gênica adaptativa",
+      "Muda permanentemente o DNA",
+      "Cria novos genes"
+    ],
+    correctAnswer: 1,
+    hint: "Influencia como os genes respondem a diferentes ambientes."
+  },
+  {
+    question: "O que são CNVs (Copy Number Variations)?",
+    options: [
+      "Sistema de identificação",
+      "Variações no número de cópias de genes",
+      "Técnica de vacinação",
+      "Método de contagem"
+    ],
+    correctAnswer: 1,
+    hint: "Refere-se a diferenças no número de cópias de segmentos de DNA."
+  },
+  {
+    question: "Como preservar raças raras geneticamente?",
+    options: [
+      "Criando mais zoológicos",
+      "Mantendo diversidade genética",
+      "Misturando com raças comuns",
+      "Congelando apenas o sêmen"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em conservar a variabilidade genética única dessas raças."
+  },
+  {
+    question: "O que é imputação genômica?",
+    options: [
+      "Técnica de clonagem",
+      "Inferência de genótipos não medidos",
+      "Sistema de reprodução",
+      "Método de vacinação"
+    ],
+    correctAnswer: 1,
+    hint: "Usa informações de população para prever genótipos desconhecidos."
+  },
+  {
+    question: "Como melhorar a qualidade da lã geneticamente?",
+    options: [
+      "Usando xampus especiais",
+      "Selecionando genes de qualidade da fibra",
+      "Alterando a dieta das ovelhas",
+      "Protegendo do sol"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em genes associados às características desejáveis da lã."
+  },
+  {
+    question: "O que é sequenciamento de célula única?",
+    options: [
+      "Clonagem de uma célula",
+      "Análise genômica de células individuais",
+      "Contagem de células no sangue",
+      "Técnica de fertilização"
+    ],
+    correctAnswer: 1,
+    hint: "Permite estudar o genoma ou transcriptoma de células isoladas."
+  },
+  {
+    question: "Como melhorar a eficiência na produção de ovos?",
+    options: [
+      "Aumentando o tamanho das galinhas",
+      "Selecionando genes de produtividade",
+      "Usando luz artificial constante",
+      "Alterando a composição da ração"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em genes associados à taxa de postura e qualidade dos ovos."
+  },
+  {
+    question: "O que é seleção genômica single-step?",
+    options: [
+      "Seleção em uma etapa",
+      "Análise combinada de pedigree e genótipo",
+      "Técnica de reprodução rápida",
+      "Sistema de pesagem único"
+    ],
+    correctAnswer: 1,
+    hint: "Integra informações de pedigree, fenótipos e genótipos em uma única análise."
+  },
+  {
+    question: "Como melhorar a qualidade do leite de cabra geneticamente?",
+    options: [
+      "Usando aditivos no leite",
+      "Selecionando genes de qualidade",
+      "Alterando o método de ordenha",
+      "Mudando a cor das cabras"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em genes associados à composição e sabor do leite."
+  },
+  {
+    question: "O que é genotipagem de baixa densidade?",
+    options: [
+      "Criação de animais menores",
+      "Análise genética econômica",
+      "Redução do rebanho",
+      "Técnica de alimentação leve"
+    ],
+    correctAnswer: 1,
+    hint: "Método mais acessível de obter informações genéticas básicas de muitos animais."
+  },
+  {
+    question: "Como selecionar para longevidade em rebanhos leiteiros?",
+    options: [
+      "Aumentando a idade de abate",
+      "Identificando genes de saúde e produção",
+      "Reduzindo a produção de leite",
+      "Usando suplementos de longevidade"
+    ],
+    correctAnswer: 1,
+    hint: "Busca características genéticas associadas à saúde e produtividade duradoura."
+  },
+  {
+    question: "O que é sequenciamento de nova geração (NGS)?",
+    options: [
+      "Novo método de criação",
+      "Técnica rápida de leitura de DNA",
+      "Sistema de reprodução avançado",
+      "Contagem automática de animais"
+    ],
+    correctAnswer: 1,
+    hint: "Permite sequenciar DNA muito mais rápido e economicamente."
+  },
+  {
+    question: "Como melhorar a resistência a parasitas em ovinos?",
+    options: [
+      "Usando mais antiparasitários",
+      "Selecionando genes de resistência",
+      "Isolando todos os animais",
+      "Mudando completamente o habitat"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em características genéticas de defesa natural contra parasitas."
+  },
+  {
+    question: "O que é RNA de interferência (RNAi) na pesquisa genética?",
+    options: [
+      "Comunicação entre animais",
+      "Técnica de silenciamento gênico",
+      "Novo tipo de ração",
+      "Método de reprodução artificial"
+    ],
+    correctAnswer: 1,
+    hint: "Usado para 'desligar' temporariamente genes específicos e estudar suas funções."
+  },
+  {
+    question: "Como melhorar a eficiência na conversão alimentar bovina?",
+    options: [
+      "Reduzindo a quantidade de alimento",
+      "Selecionando genes de eficiência metabólica",
+      "Aumentando o tamanho dos animais",
+      "Usando apenas ração processada"
+    ],
+    correctAnswer: 1,
+    hint: "Busca características genéticas associadas ao uso eficiente dos nutrientes."
+  },
+  {
+    question: "Como a epigenética influencia características produtivas?",
+    options: [
+      "Não influencia",
+      "Alterando a expressão gênica",
+      "Mudando permanentemente o DNA",
+      "Criando novos genes"
+    ],
+    correctAnswer: 1,
+    hint: "Afeta como os genes são expressos sem alterar a sequência de DNA."
+  },
+  {
+    question: "Como melhorar a qualidade da carne suína geneticamente?",
+    options: [
+      "Aumentando o tamanho dos porcos",
+      "Selecionando genes de qualidade da carne",
+      "Usando mais aditivos na ração",
+      "Alterando o método de abate"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em genes associados à textura, sabor e composição da carne."
+  },
+  {
+    question: "O que é a técnica CRISPR-Cas9 na pecuária?",
+    options: [
+      "Nova raça de gado",
+      "Ferramenta precisa de edição genética",
+      "Método de inseminação",
+      "Sistema de identificação animal"
+    ],
+    correctAnswer: 1,
+    hint: "Permite modificações específicas e precisas no DNA dos animais."
+  },
+  {
+    question: "Como selecionar aves para maior produção de ovos?",
+    options: [
+      "Aumentando o tamanho das galinhas",
+      "Identificando genes de alta produtividade",
+      "Usando luz artificial constante",
+      "Alterando a composição da ração"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em características genéticas associadas à taxa de postura e eficiência."
+  },
+  {
+    question: "O que é um QTL e sua importância no melhoramento animal?",
+    options: [
+      "Quota de Tratamento Leiteiro",
+      "Locus de característica quantitativa",
+      "Qualidade Total de Linhagem",
+      "Quantidade de Tempo de Lactação"
+    ],
+    correctAnswer: 1,
+    hint: "Região do genoma associada a uma característica quantitativa importante."
+  },
+  {
+    question: "Como a genômica pode melhorar o bem-estar animal?",
+    options: [
+      "Criando animais sem sentimentos",
+      "Selecionando para melhor adaptação",
+      "Aumentando a produção a todo custo",
+      "Reduzindo o tamanho dos rebanhos"
+    ],
+    correctAnswer: 1,
+    hint: "Busca características que promovem melhor adaptação e resistência ao estresse."
+  },
+  {
+    question: "O que é o sequenciamento de terceira geração?",
+    options: [
+      "Técnica de reprodução avançada",
+      "Método de leitura de DNA de moléculas longas",
+      "Sistema de contagem de gerações",
+      "Nova forma de cruzamento"
+    ],
+    correctAnswer: 1,
+    hint: "Permite ler sequências muito longas de DNA de uma só vez."
+  },
+  {
+    question: "Como melhorar geneticamente a resistência ao calor em bovinos?",
+    options: [
+      "Pintando os animais de branco",
+      "Selecionando genes de tolerância térmica",
+      "Mantendo os animais sempre na sombra",
+      "Reduzindo o tamanho dos animais"
+    ],
+    correctAnswer: 1,
+    hint: "Foca em características genéticas associadas à adaptação a altas temperaturas."
+  }
+]
+
+function shuffleArray<T>(array: T[]): T[] {
+const shuffled = [...array]
+for (let i = shuffled.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i + 1));
+  [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+}
+return shuffled
+}
+
+export default function MelhoramentoGeneticoNaPecuaria() {
+const [questions, setQuestions] = useState<typeof allQuestions>([])
+const [currentQuestion, setCurrentQuestion] = useState(0)
+const [score, setScore] = useState(0)
+const [showHint, setShowHint] = useState(false)
+const [hintsUsed, setHintsUsed] = useState(0)
+const [isQuizComplete, setIsQuizComplete] = useState(false)
+const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
+const [isAnswerLocked, setIsAnswerLocked] = useState(false)
+const [feedback, setFeedback] = useState('')
+const [showFeedbackForm, setShowFeedbackForm] = useState(false)
+const [hasCompletedQuiz, setHasCompletedQuiz] = useState(false)
+const [showExplanation, setShowExplanation] = useState(false)
+const [streak, setStreak] = useState(0)
+
+useEffect(() => {
+  const quizCompleted = localStorage.getItem('quizCompleted')
+  if (quizCompleted) {
+    setHasCompletedQuiz(true)
+  } else {
+    const shuffledQuestions = shuffleArray([...allQuestions]);
+    setQuestions(shuffledQuestions.slice(0, 5));
+  }
+}, []);
+
+const handleAnswer = (selectedIndex: number) => {
+  if (isAnswerLocked) return
+
+  setSelectedAnswer(selectedIndex)
+  setIsAnswerLocked(true)
+
+  if (selectedIndex === questions[currentQuestion].correctAnswer) {
+    setScore(score + 1)
+    setStreak(streak + 1)
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    })
+  } else {
+    setStr eak(0)
+  }
+
+  setTimeout(() => {
+    setShowExplanation(true)
+  }, 1000)
+}
+
+const nextQuestion = () => {
+  if (currentQuestion < questions.length - 1) {
+    setCurrentQuestion(currentQuestion + 1)
+    setSelectedAnswer(null)
+    setShowHint(false)
+    setIsAnswerLocked(false)
+    setShowExplanation(false)
+  } else {
+    setIsQuizComplete(true)
+    localStorage.setItem('quizCompleted', 'true')
+  }
+}
+
+const showHintHandler = () => {
+  if (hintsUsed < 2) {
+    setShowHint(true)
+    setHintsUsed(hintsUsed + 1)
+  }
+}
+
+const getReward = (score: number) => {
+  const bubbaloosCount = score <= 3 ? score : 6;
+  const pirulitos = score === 5 ? 1 : 0;
+  return { bubbaloosCount, pirulitos };
+}
+
+const handleFeedbackSubmit = (e: React.FormEvent) => {
+  e.preventDefault()
+  setShowFeedbackForm(false)
+  alert('Obrigado pelo seu feedback!')
+}
+
+const buttonVariants = {
+  hover: { scale: 1.05 },
+  tap: { scale: 0.95 },
+}
+
+const questionVariants = {
+  initial: { opacity: 0, y: 50 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -50 }
+}
+
+if (hasCompletedQuiz) {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-red-500 flex items-center justify-center p-4">
+      <motion.div 
+        className="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full text-center"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h2 className="text-3xl font-bold mb-4 text-purple-600">Você já completou o quiz!</h2>
+        <p className="text-xl text-gray-600 mb-6">Obrigado por participar. Volte outro dia para mais desafios!</p>
+      </motion.div>
+    </div>
+  )
+}
+
+return (
+  <div className="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-red-500 flex items-center justify-center p-4">
+    <motion.div 
+      className="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full"
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <h1 className="text-4xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+        Melhoramento Genético na Pecuária
+        <Leaf className="inline-block ml-2 text-green-500" />
+      </h1>
+      
+      {!isQuizComplete && questions.length > 0 ? (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentQuestion}
+            variants={questionVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: 0.5 }}
+          >
+            <div className="mb-4 flex justify-between items-center">
+              <span className="text-lg font-semibold text-purple-600">Pergunta {currentQuestion + 1} de {questions.length}</span>
+              <span className="text-lg font-semibold text-orange-500">Sequência: {streak} 🔥</span>
+            </div>
+            <h2 className="text-2xl font-semibold mb-4 text-gray-800">{questions[currentQuestion].question}</h2>
+            <div className="space-y-4">
+              {questions[currentQuestion].options.map((option, index) => (
+                <motion.button
+                  key={index}
+                  className={`w-full p-4 text-left rounded-lg text-lg font-medium transition-colors ${
+                    selectedAnswer === index
+                      ? index === questions[currentQuestion].correctAnswer
+                        ? 'bg-green-500 text-white'
+                        : 'bg-red-500 text-white'
+                      : isAnswerLocked
+                        ? 'bg-gray-300 cursor-not-allowed'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+                  }`}
+                  onClick={() => handleAnswer(index)}
+                  variants={buttonVariants}
+                  whileHover={isAnswerLocked ? {} : "hover"}
+                  whileTap={isAnswerLocked ? {} : "tap"}
+                  disabled={isAnswerLocked}
+                >
+                  {option}
+                </motion.button>
+              ))}
+            </div>
+            
+            <div className="mt-6 flex justify-between items-center">
+              <motion.button
+                className={`px-4 py-2 rounded-full flex items-center ${
+                  hintsUsed < 2 && !isAnswerLocked ? 'bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white' : 'bg-gray-300 cursor-not-allowed'
+                }`}
+                onClick={showHintHandler}
+                disabled={hintsUsed >= 2 || isAnswerLocked}
+                whileHover={hintsUsed < 2 && !isAnswerLocked ? { scale: 1.05 } : {}}
+                whileTap={hintsUsed < 2 && !isAnswerLocked ? { scale: 0.95 } : {}}
+              >
+                <Zap className="mr-2" />
+                Turbinar! ({2 - hintsUsed})
+              </motion.button>
+              <p className="text-xl font-bold text-purple-600">Bubbaloosss: {score} <span className="text-2xl">🍬</span></p>
+            </div>
+            
+            {showHint && (
+              <motion.p
+                className="mt-4 p-4 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-lg text-gray-800"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <span className="font-bold">Dica Turbinada:</span> {questions[currentQuestion].hint}
+              </motion.p>
+            )}
+
+            {showExplanation && (
+              <motion.div
+                className="mt-6 p-4 bg-blue-100 rounded-lg"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h3 className="text-lg font-semibold mb-2 text-blue-800">Explicação:</h3>
+                <p className="text-gray-800">
+                  A resposta correta é: {questions[currentQuestion].options[questions[currentQuestion].correctAnswer]}.
+                </p>
+                <motion.button
+                  className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-full font-semibold flex items-center"
+                  onClick={nextQuestion}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Próxima Pergunta
+                  <ChevronRight className="ml-2" />
+                </motion.button>
+              </motion.div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      ) : isQuizComplete ? (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="text-center"
+        >
+          <h2 className="text-3xl font-bold mb-4 text-purple-600">Quiz Concluído!</h2>
+          <p className="text-2xl mb-4 text-gray-800">Você acertou {score} de {questions.length} questões!</p>
+          <motion.div
+            className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Award className="inline-block mr-2 text-yellow-500" />
+            Parabéns! Você ganhou {getReward(score).bubbaloosCount} Bubbaloosss
+            {getReward(score).pirulitos > 0 && ` e ${getReward(score).pirulitos} Pirulito`}!
+            {' '}{Array(getReward(score).bubbaloosCount).fill('🍬').join('')}{getReward(score).pirulitos > 0 && '🍭'}
+          </motion.div>
+          <motion.p
+            className="mt-6 text-lg text-gray-700"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+          >
+            Para receber seu prêmio, fale com alguém que tenha um crachá!
+          </motion.p>
+          {!showFeedbackForm ? (
+            <motion.button
+              className="mt-6 px-6 py-3 bg-purple-600 text-white rounded-full font-semibold"
+              onClick={() => setShowFeedbackForm(true)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ThumbsUp className="inline-block mr-2" />
+              Dar Feedback
+            </motion.button>
+          ) : (
+            <motion.form
+              onSubmit={handleFeedbackSubmit}
+              className="mt-6 space-y-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <textarea
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                placeholder="O que você achou do quiz? Sua opinião é importante para nós!"
+                className="w-full p-4 border rounded-lg"
+                rows={4}
+              />
+              <motion.button
+                type="submit"
+                className="px-6 py-3 bg-purple-600 text-white rounded-full font-semibold"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Enviar Feedback
+              </motion.button>
+            </motion.form>
+          )}
+        </motion.div>
+      ) : null}
+      <motion.p
+        className="mt-8 text-sm text-center text-gray-500"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+      >
+        Feito para fins educacionais: Conex ESJ 2024
+      </motion.p>
+    </motion.div>
+  </div>
+)
+}
